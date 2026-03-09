@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.unisabana.dyas.sampleprj.dao.mybatis.mappers.ClienteMapper">
+
+<!-- ============================= -->
+<!-- RESULTMAP CLIENTE -->
+<!-- ============================= -->
+
+<resultMap type="Cliente" id="ClienteResult">
+
+    <id property="documento" column="documento"/>
+    <result property="nombre" column="nombre"/>
+    <result property="telefono" column="telefono"/>
+    <result property="direccion" column="direccion"/>
+    <result property="email" column="email"/>
+    <result property="vetado" column="vetado"/>
+
+    <collection property="rentados"
+                ofType="ItemRentado"
+                resultMap="ItemRentadoResult"/>
+
+</resultMap>
+
+
+<!-- ============================= -->
+<!-- RESULTMAP ITEMRENTADO -->
+<!-- ============================= -->
+
+<resultMap type="ItemRentado" id="ItemRentadoResult">
+
+    <result property="fechainiciorenta" column="fechainiciorenta"/>
+    <result property="fechafinrenta" column="fechafinrenta"/>
+
+    <association property="item"
+                 javaType="Item"
+                 resultMap="ItemResult"/>
+
+</resultMap>
+
+
+<!-- ============================= -->
+<!-- RESULTMAP ITEM -->
+<!-- ============================= -->
+
+<resultMap type="Item" id="ItemResult">
+
+    <id property="id" column="i_id"/>
+    <result property="nombre" column="i_nombre"/>
+    <result property="descripcion" column="descripcion"/>
+    <result property="fechaLanzamiento" column="fechaLanzamiento"/>
+    <result property="tarifaxDia" column="tarifaxdia"/>
+    <result property="formatoRenta" column="formatorenta"/>
+    <result property="genero" column="genero"/>
+
+    <association property="tipo"
+                 javaType="TipoItem"
+                 resultMap="TipoItemResult"/>
+
+</resultMap>
+
+
+<!-- ============================= -->
+<!-- RESULTMAP TIPOITEM -->
+<!-- ============================= -->
+
+<resultMap type="TipoItem" id="TipoItemResult">
+
+    <id property="id" column="ti_id"/>
+    <result property="descripcion" column="ti_descripcion"/>
+
+</resultMap>
+
+
+<!-- ============================= -->
+<!-- CONSULTAR TODOS LOS CLIENTES -->
+<!-- ============================= -->
+
+<select id="consultarClientes" resultMap="ClienteResult">
+
+    select
+     c.nombre,
+     c.documento,
+     c.telefono,
+     c.direccion,
+     c.email,
+     c.vetado,
+
+     datetime(ir.fechainiciorenta) as fechainiciorenta,
+     datetime(ir.fechafinrenta) as fechafinrenta,
+
+     i.id as i_id,
+     i.nombre as i_nombre,
+     i.descripcion,
+     datetime(i.fechaLanzamiento) as fechaLanzamiento,
+     i.tarifaxdia,
+     i.formatorenta,
+     i.genero,
+
+     ti.id as ti_id,
+     ti.descripcion as ti_descripcion
+
+    FROM VI_CLIENTES as c
+    left join VI_ITEMRENTADO as ir on c.documento=ir.CLIENTES_documento
+    left join VI_ITEMS as i on ir.ITEMS_id=i.id
+    left join VI_TIPOITEM as ti on i.TIPOITEM_id=ti.id
+
+</select>
+
+
+<!-- ============================= -->
+<!-- CONSULTAR CLIENTE -->
+<!-- ============================= -->
+
+<select id="consultarCliente" resultMap="ClienteResult">
+
+    select
+     c.nombre,
+     c.documento,
+     c.telefono,
+     c.direccion,
+     c.email,
+     c.vetado,
+
+     datetime(ir.fechainiciorenta) as fechainiciorenta,
+     datetime(ir.fechafinrenta) as fechafinrenta,
+
+     i.id as i_id,
+     i.nombre as i_nombre,
+     i.descripcion,
+     datetime(i.fechaLanzamiento) as fechaLanzamiento,
+     i.tarifaxdia,
+     i.formatorenta,
+     i.genero,
+
+     ti.id as ti_id,
+     ti.descripcion as ti_descripcion
+
+    FROM VI_CLIENTES as c
+    left join VI_ITEMRENTADO as ir on c.documento=ir.CLIENTES_documento
+    left join VI_ITEMS as i on ir.ITEMS_id=i.id
+    left join VI_TIPOITEM as ti on i.TIPOITEM_id=ti.id
+
+    WHERE c.documento = #{idcli}
+
+</select>
+
+
+<!-- ============================= -->
+<!-- AGREGAR ITEM RENTADO -->
+<!-- ============================= -->
+
+<insert id="agregarItemRentadoACliente">
+
+INSERT INTO VI_ITEMRENTADO
+(CLIENTES_documento, ITEMS_id, fechainiciorenta, fechafinrenta)
+
+VALUES
+(#{idcli}, #{iditem}, #{fechaini}, #{fechafin})
+
+</insert>
+
+</mapper>

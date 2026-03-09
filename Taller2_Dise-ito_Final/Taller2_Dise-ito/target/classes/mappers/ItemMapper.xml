@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="edu.unisabana.dyas.sampleprj.dao.mybatis.mappers.ItemMapper">
+
+<!-- ============================================ -->
+<!-- RESULTMAP Item -->
+<!-- ============================================ -->
+<resultMap type="Item" id="ItemResult">
+
+    <id property="id" column="id"/>
+    <result property="nombre" column="nombre"/>
+    <result property="descripcion" column="descripcion"/>
+    <result property="fechaLanzamiento" column="fechaLanzamiento"/>
+    <result property="tarifaxDia" column="tarifaxdia"/>
+    <result property="formatoRenta" column="formatorenta"/>
+    <result property="genero" column="genero"/>
+
+    <association property="tipo"
+                 javaType="TipoItem">
+
+        <id property="id" column="ti_id"/>
+        <result property="descripcion" column="ti_descripcion"/>
+
+    </association>
+
+</resultMap>
+
+
+<!-- ============================================ -->
+<!-- consultarItems -->
+<!-- ============================================ -->
+<select id="consultarItems" resultMap="ItemResult">
+
+    select
+        i.id,
+        i.nombre,
+        i.descripcion,
+        datetime(i.fechaLanzamiento) as fechaLanzamiento,
+        i.tarifaxdia,
+        i.formatorenta,
+        i.genero,
+
+        ti.id as ti_id,
+        ti.descripcion as ti_descripcion
+
+    from VI_ITEMS i
+    left join VI_TIPOITEM ti on i.TIPOITEM_id = ti.id
+
+</select>
+
+
+<!-- ============================================ -->
+<!-- consultarItem -->
+<!-- ============================================ -->
+<select id="consultarItem" parameterType="map" resultMap="ItemResult">
+
+    select
+        i.id,
+        i.nombre,
+        i.descripcion,
+        datetime(i.fechaLanzamiento) as fechaLanzamiento,
+        i.tarifaxdia,
+        i.formatorenta,
+        i.genero,
+
+        ti.id as ti_id,
+        ti.descripcion as ti_descripcion
+
+    from VI_ITEMS i
+    left join VI_TIPOITEM ti on i.TIPOITEM_id = ti.id
+
+    where i.id = #{iditem}
+
+</select>
+
+
+<!-- ============================================ -->
+<!-- insertarItem -->
+<!-- ============================================ -->
+<insert id="insertarItem" parameterType="map">
+
+    insert into VI_ITEMS
+    (id, nombre, descripcion, fechaLanzamiento, tarifaxdia, formatorenta, genero, TIPOITEM_id)
+
+    values
+    (
+    #{item.id},
+    #{item.nombre},
+    #{item.descripcion},
+    #{item.fechaLanzamiento},
+    #{item.tarifaxDia},
+    #{item.formatoRenta},
+    #{item.genero},
+    #{item.tipo.id}
+    )
+
+</insert>
+
+</mapper>
